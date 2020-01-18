@@ -1,0 +1,17 @@
+curl -X GET "localhost:9200/images/image/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+    "query": {
+        "multi_match" : {
+            "query":    "cute",
+            "fields": [ "title", "tags" ]
+        }
+    }
+}
+'
+
+curl -X GET "localhost:9200/images/image/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+    "size" : 3,
+    "sort": [{ "upvotes": "desc" }]
+}
+'
