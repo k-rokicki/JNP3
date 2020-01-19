@@ -148,4 +148,4 @@ def search_doggos(request):
         search_phrase = request.POST.get("search_phrase", "")
         found_dogs = get_doggos_by_term(search_phrase)
 
-    return render(request, 'search_doggos.html', {'found_dogs': found_dogs, 'query': query, 'title_for_query': search_phrase})
+    return render(request, 'search_doggos.html', {'found_dogs': found_dogs, 'query': query, 'search_phrase': search_phrase})
