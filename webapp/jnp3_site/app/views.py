@@ -140,13 +140,12 @@ def top_doggos(request):
 def search_doggos(request):
 
     found_dogs = []
-    title_for_query = ''
-    tag_for_query = ''
+    search_phrase = ''
     query = False
 
     if request.method == 'POST':
         query = True
-        tag_for_query = request.POST.get("tag", "")
-        found_dogs = get_doggos_by_term(tag_for_query)
+        search_phrase = request.POST.get("search_phrase", "")
+        found_dogs = get_doggos_by_term(search_phrase)
 
-    return render(request, 'search_doggos.html', {'found_dogs': found_dogs, 'query': query, 'title_for_query': title_for_query, 'tag_for_query': tag_for_query})
+    return render(request, 'search_doggos.html', {'found_dogs': found_dogs, 'query': query, 'title_for_query': search_phrase})

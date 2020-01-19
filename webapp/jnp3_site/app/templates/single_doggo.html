@@ -47,18 +47,21 @@
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">
                 <div class="p-5">
-                    <img class="img-fluid rounded" style="max-height: 500px; width: auto" src="/static/content/{{ dog_data.dog_id }}.jpg" alt="">
+                    <img class="img-fluid rounded" style="max-height: 500px; width: auto"
+                         src="/static/content/{{ dog_data.dog_id }}.jpg" alt="">
                 </div>
             </div>
             <div class="col-lg-6 order-lg-1">
                 <div class="p-5 text-center">
-                    <h2 class="display-4">{{ dog_data.title  }}</h2>
+                    <h2 class="display-4">{{ dog_data.title }}</h2>
                     <div class="flex-wrap">
                         {% for tag in dog_data.tags %}
                             <form action="/search" method="post" style="display: none">
-                                <button id=button_{{ tag }} name="tag" value="{{ tag }}" class="btn btn-primary"></button>
+                                <button id=button_{{ tag }} name="search_phrase" value="{{ tag }}"
+                                        class="btn btn-primary"></button>
                             </form>
-                            <a href="#" onclick="document.getElementById('button_{{ tag }}').click()"><span class="badge badge-pill badge-primary">{{ tag }}</span></a>
+                            <a href="#" onclick="document.getElementById('button_{{ tag }}').click()"><span
+                                    class="badge badge-pill badge-primary">{{ tag }}</span></a>
                         {% endfor %}
                     </div>
                     <div class="my-4 p-2">

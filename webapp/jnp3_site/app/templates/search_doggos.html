@@ -47,19 +47,16 @@
     <div class="container my-3">
         <form action="/search" method="post">
             <div class="form-group">
-                <label>By title</label>
-                <input class="form-control" type="text" name="title">
-            </div>
-            <div>
-                <label>By tag</label>
-                <input class="form-control" type="text" name="tag">
+                <label>Search by phrase</label>
+                <input class="form-control" type="text" name="search_phrase">
             </div>
             <button type="submit" class="btn btn-primary my-3">Search</button>
         </form>
     </div>
 
     {% if query %}
-        <div class="text-center"><h4>Searched by: title = "{{ title_for_query }}", tag = "{{ tag_for_query }}"</h4></div>
+        <div class="text-center"><h4>Searched by phrase: "{{ search_phrase }}"</h4>
+        </div>
 
 
         {% for dog_data in found_dogs %}
@@ -68,8 +65,10 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 order-lg-2">
                         <div class="p-5">
-                            <a href="/{{ dog_data.dog_id }}"><img class="img-fluid rounded" style="max-height: 500px; width: auto"
-                                 src="/static/content/{{ dog_data.dog_id }}.jpg" alt=""></a>
+                            <a href="/{{ dog_data.dog_id }}"><img class="img-fluid rounded"
+                                                                  style="max-height: 500px; width: auto"
+                                                                  src="/static/content/{{ dog_data.dog_id }}.jpg"
+                                                                  alt=""></a>
                         </div>
                     </div>
                     <div class="col-lg-6 order-lg-1">
@@ -79,7 +78,11 @@
                             <div class="flex-wrap">
 
                                 {% for tag in dog_data.tags %}
-                                    <a href="/search/{{ tag }}"><span
+                                    <form action="/search" method="post" style="display: none">
+                                        <button id=button_{{ tag }} name="search_phrase" value="{{ tag }}"
+                                                class="btn btn-primary"></button>
+                                    </form>
+                                    <a href="#" onclick="document.getElementById('button_{{ tag }}').click()"><span
                                             class="badge badge-pill badge-primary">{{ tag }}</span></a>
                                 {% endfor %}
                             </div>

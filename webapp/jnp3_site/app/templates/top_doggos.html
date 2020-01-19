@@ -50,8 +50,10 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 order-lg-2">
                     <div class="p-5">
-                        <a href="/{{ dog_data.dog_id }}"><img class="img-fluid rounded" style="max-height: 500px; width: auto"
-                             src="/static/content/{{ dog_data.dog_id }}.jpg" alt=""></a>
+                        <a href="/{{ dog_data.dog_id }}"><img class="img-fluid rounded"
+                                                              style="max-height: 500px; width: auto"
+                                                              src="/static/content/{{ dog_data.dog_id }}.jpg"
+                                                              alt=""></a>
                     </div>
                 </div>
                 <div class="col-lg-6 order-lg-1">
@@ -62,7 +64,7 @@
 
                             {% for tag in dog_data.tags %}
                                 <form action="/search" method="post" style="display: none">
-                                    <button id=button_{{ tag }} name="tag" value="{{ tag }}"
+                                    <button id=button_{{ tag }} name="search_phrase" value="{{ tag }}"
                                             class="btn btn-primary"></button>
                                 </form>
                                 <a href="#" onclick="document.getElementById('button_{{ tag }}').click()"><span
