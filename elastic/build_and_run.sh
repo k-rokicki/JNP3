@@ -40,3 +40,19 @@ curl -X POST "localhost:9200/images/image/5" -H 'Content-Type: application/json'
     "upvotes": 27
 }
 '
+
+curl -X POST "localhost:9200/images/image/6" -H 'Content-Type: application/json' -d'
+{
+    "title": "Corgi Maybe?",
+    "tags": "fluffy, happy, tongue",
+    "upvotes": 7
+}
+'
+
+curl -X POST "localhost:9200/images/image/7" -H 'Content-Type: application/json' -d'
+{
+    "title": "German Shepherd",
+    "tags": "safe, good, boy",
+    "upvotes": 9
+}
+'
