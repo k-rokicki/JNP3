@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo docker run -d --name pieski-elastic-container --network="host" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+sudo docker run -d --name elastic --network="host" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.5.1
 
 while ! nc -z localhost 9200; do   
   sleep 0.1

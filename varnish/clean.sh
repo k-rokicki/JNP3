@@ -1,3 +1,3 @@
 #!/bin/bash
-sudo docker image rm pieski-varnish-image --force
-sudo docker container rm pieski-varnish-container --force
+sudo docker image rm varnish --force
+sudo docker container rm varnish --force

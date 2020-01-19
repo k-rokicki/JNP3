@@ -3,12 +3,12 @@ vcl 4.0;
 import directors;
 
 backend server1 {
-    .host = "127.0.0.1";
+    .host = "0.0.0.0";
     .port = "1234";
 }
 
 backend server2 {
-    .host = "127.0.0.1";
+    .host = "0.0.0.0";
     .port = "4321";
 }
 
