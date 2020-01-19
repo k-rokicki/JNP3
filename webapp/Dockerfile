@@ -4,6 +4,6 @@ COPY ./jnp3_site .
 
 RUN pip install -r ./requirements.txt
 
-EXPOSE 8080
+EXPOSE 1234
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:1234"]

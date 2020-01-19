@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker build -t pieski-varnish-image .
+sudo docker build -t varnish .

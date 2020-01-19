@@ -1,5 +1,3 @@
-docker build -t "serve_static" .
+sudo docker build -t "serve_static_other" .
 
-docker run -p 8888:80  serve_static
-
-
+sudo docker run --name serve_static_other --network="host" serve_static_other

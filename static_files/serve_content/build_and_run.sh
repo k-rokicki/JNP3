@@ -1,3 +1,3 @@
-docker build -t "serve_static" .
+sudo docker build -t "serve_static_content" .
 
-docker run -p 8888:80  serve_static
+sudo docker run --name serve_static_content --network="host" serve_static_content

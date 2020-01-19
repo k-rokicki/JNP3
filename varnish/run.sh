@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker run --name pieski-varnish-container --network="host" pieski-varnish-image
+sudo docker run --name varnish --network="host" varnish
