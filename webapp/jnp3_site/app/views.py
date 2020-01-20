@@ -1,17 +1,31 @@
+from django.core.files import File
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 import random
 import requests
+import pika
+import json
+from os import system
+import string
+
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+
+channel.queue_declare(queue='task_queue', durable=True)
 
 url = 'http://localhost:9200/images/image/_search?pretty'
 headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
 
-dog_data_list = [{'title': 'Doggo', 'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'], 'dog_id': 0, 'woofs': 4242},
-                 {'title': 'Pupper', 'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'], 'dog_id': 1, 'woofs': 424},
-                 {'title': 'Woofer', 'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'], 'dog_id': 2, 'woofs': 42},
-                 {'title': 'Fluffer', 'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'], 'dog_id': 3, 'woofs': 4}]
+
+def copy_file_to_docker_container(file_path, docker_file_path, docker_tag):
+    system(f'sudo docker cp {file_path} {docker_tag}:{docker_file_path}')
+
+
+def remove_file(file_path):
+    system(f'rm -f {file_path}')
 
 
 def parse_response(response):
@@ -149,3 +163,34 @@ def search_doggos(request):
         found_dogs = get_doggos_by_term(search_phrase)
 
     return render(request, 'search_doggos.html', {'found_dogs': found_dogs, 'query': query, 'search_phrase': search_phrase})
+
+
+@csrf_exempt
+def upload_doggo(request):
+
+    if request.method == 'POST':
+        image = request.FILES['dog_image']
+        title = request.POST.get("title", "")
+        tags = request.POST.get("tags", "")
+        name_len = 64
+        file_name = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(name_len))
+        file_name += '.jpg'
+
+        fout = open(f'/photos_to_upload/{file_name}', 'wb+')
+        file_content = File(image)
+        for chunk in file_content.chunks():
+            fout.write(chunk)
+        fout.close()
+
+        upload_dict = {'path': file_name, 'title': title, 'tags': tags.split(',')}
+
+        message = json.dumps(upload_dict)
+        channel.basic_publish(
+            exchange='',
+            routing_key='task_queue',
+            body=message,
+            properties=pika.BasicProperties(
+                delivery_mode=2,  # make message persistent
+            ))
+
+    return render(request, 'upload_doggo.html')

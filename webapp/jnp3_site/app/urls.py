@@ -10,4 +10,5 @@ urlpatterns = [
     path('search', views.search_doggos, name='search'),
     path('top', views.top_doggos, name='top'),
     path('rate/<int:dog_id>', views.rate_doggo, name='rate'),
+    path('upload', views.upload_doggo, name='upload'),
 ]
