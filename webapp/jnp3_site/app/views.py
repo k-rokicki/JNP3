@@ -174,8 +174,9 @@ def upload_doggo(request):
         title = request.POST.get("title", "")
         tags = request.POST.get("tags", "")
         name_len = 64
+        request_file_name = image.name
         file_name = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(name_len))
-        file_name += '.jpg'
+        file_name += '.' + request_file_name.split('.')[-1]
 
         fout = open(f'/photos_to_upload/{file_name}', 'wb+')
         file_content = File(image)
