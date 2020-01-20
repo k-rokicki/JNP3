@@ -38,3 +38,29 @@ channel.basic_qos(prefetch_count=1)
 channel.basic_consume(queue='task_queue', on_message_callback=callback)
 
 channel.start_consuming()
+
+###
+
+headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+while True:
+    dog_id = random.randrange(1000000000000)
+    r = requests.get('http://localhost:9200/images/image/%d?pretty' %
+                     dog_id, headers=headers)
+    response = r.json()
+
+    if response['found'] == False:
+        payload = '{\
+            {\
+                \"title\": \"%s\",\
+                \"tags\": \"%s\",\
+                \"upvotes\": 0\
+            }\
+        }' % (title, tags)
+
+        r = requests.post('localhost:9200/images/image/%d' %
+                          dog_id, data=payload, headers=headers)
+        response = r.json()
+
+        if (response['result'] == 'created' and response['_id'] == str(dog_id))
+        break
