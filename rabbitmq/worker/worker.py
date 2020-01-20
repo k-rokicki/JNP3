@@ -32,12 +32,13 @@ def add_to_database(title, tags):
     return dog_id
 
 
-def copy_file_from_webapp(webapp_folder_path, local_folder_path, entry_path):
-    system('sudo docker cp webapp:%s %s' % (webapp_folder_path + entry_path, local_folder_path + entry_path))
+def copy_file_from_webapp(webapp_container, webapp_folder_path, local_folder_path, entry_path):
+    system('sudo docker cp %s:%s %s' % (
+        webapp_container, webapp_folder_path + entry_path, local_folder_path + entry_path))
 
 
-def remove_file_from_webapp(webapp_folder_path, entry_path):
-    system('sudo docker exec webapp rm -rf %s' % webapp_folder_path + entry_path)
+def remove_file_from_webapp(webapp_container, webapp_folder_path, entry_path):
+    system('sudo docker exec %s rm -rf %s' % (webapp_container, webapp_folder_path + entry_path))
 
 
 def resize_image(path_to_file, new_height, path_to_resized_file=None):
@@ -58,7 +59,7 @@ def remove_file(file_path):
     system('rm -f %s' % file_path)
 
 
-content_servers = ['serve_static_content', 'serve_static_content2']
+content_servers = ['serve_static_content1', 'serve_static_content2']
 content_folder_path = '/usr/share/nginx/html/static/content'
 
 webapp_folder_path = '/photos_to_upload/'
@@ -78,7 +79,9 @@ def callback(ch, method, properties, body):
     new_entry = json.loads(body.decode('utf-8'))
     dog_id = add_to_database(new_entry['title'], ', '.join(new_entry['tags']))
 
-    copy_file_from_webapp(webapp_folder_path,
+    webapp_container = 'webapp%d' % new_entry['server']
+
+    copy_file_from_webapp(webapp_container, webapp_folder_path,
                           local_folder_path, new_entry['path'])
 
     resize_image(local_folder_path + new_entry['path'], 500)
@@ -88,7 +91,8 @@ def callback(ch, method, properties, body):
             local_folder_path + new_entry['path'], '%s/%s.jpg' % (content_folder_path, dog_id), content_server_tag)
 
     remove_file(local_folder_path + new_entry['path'])
-    remove_file_from_webapp(webapp_folder_path, new_entry['path'])
+
+    remove_file_from_webapp(webapp_container, webapp_folder_path, new_entry['path'])
 
     print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)

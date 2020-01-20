@@ -184,7 +184,7 @@ def upload_doggo(request):
             fout.write(chunk)
         fout.close()
 
-        upload_dict = {'path': file_name, 'title': title, 'tags': tags.split(',')}
+        upload_dict = {'server': 1, 'path': file_name, 'title': title, 'tags': tags.split(',')}
 
         message = json.dumps(upload_dict)
         channel.basic_publish(
