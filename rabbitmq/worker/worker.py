@@ -32,6 +32,14 @@ def add_to_database(title, tags):
     return dog_id
 
 
+def copy_file_from_webapp(webapp_folder_path, local_folder_path, entry_path):
+    system('sudo docker cp webapp:%s %s' % (webapp_folder_path + entry_path, local_folder_path + entry_path))
+
+
+def remove_file_from_webapp(webapp_folder_path, entry_path):
+    system('sudo docker exec webapp rm -rf %s' % webapp_folder_path + entry_path)
+
+
 def resize_image(path_to_file, new_height, path_to_resized_file=None):
     if path_to_resized_file is None:
         path_to_resized_file = path_to_file
@@ -43,15 +51,18 @@ def resize_image(path_to_file, new_height, path_to_resized_file=None):
 
 
 def copy_file_to_docker_container(file_path, docker_file_path, docker_tag):
-    system(f'sudo docker cp {file_path} {docker_tag}:{docker_file_path}')
+    system('sudo docker cp %s %s:%s' % (file_path, docker_tag, docker_file_path))
 
 
 def remove_file(file_path):
-    system(f'rm -f {file_path}')
+    system('rm -f %s' % file_path)
 
 
 content_servers = ['serve_static_content', 'serve_static_content2']
 content_folder_path = '/usr/share/nginx/html/static/content'
+
+webapp_folder_path = '/photos_to_upload/'
+local_folder_path = './photos_to_upload/'
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
@@ -64,12 +75,20 @@ print(' [*] Waiting for messages. To exit press CTRL+C')
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
 
-    new_entry = json.loads(body)
+    new_entry = json.loads(body.decode('utf-8'))
     dog_id = add_to_database(new_entry['title'], ', '.join(new_entry['tags']))
-    resize_image(new_entry['path'], 500)
+
+    copy_file_from_webapp(webapp_folder_path,
+                          local_folder_path, new_entry['path'])
+
+    resize_image(local_folder_path + new_entry['path'], 500)
+
     for content_server_tag in content_servers:
-        copy_file_to_docker_container(new_entry['path'], f'{content_folder_path}/{dog_id}.jpg', content_server_tag)
-    remove_file(new_entry['path'])
+        copy_file_to_docker_container(
+            local_folder_path + new_entry['path'], '%s/%s.jpg' % (content_folder_path, dog_id), content_server_tag)
+
+    remove_file(local_folder_path + new_entry['path'])
+    remove_file_from_webapp(webapp_folder_path, new_entry['path'])
 
     print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)
