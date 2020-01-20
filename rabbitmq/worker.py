@@ -18,14 +18,12 @@ def add_to_database(title, tags):
 
         if not response['found']:
             payload = '{\
-                {\
-                    \"title\": \"%s\",\
-                    \"tags\": \"%s\",\
-                    \"upvotes\": 0\
-                }\
+                \"title\": \"%s\",\
+                \"tags\": \"%s\",\
+                \"upvotes\": 0\
             }' % (title, tags)
 
-            r = requests.post('localhost:9200/images/image/%d' %
+            r = requests.post('http://localhost:9200/images/image/%d' %
                               dog_id, data=payload, headers=headers)
             response = r.json()
 
@@ -53,7 +51,7 @@ def remove_file(file_path):
 
 
 content_servers = ['serve_static_content', 'serve_static_content2']
-content_folder_path = '/static/content'
+content_folder_path = '/usr/share/nginx/html/static/content'
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
@@ -67,7 +65,7 @@ def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
 
     new_entry = json.loads(body)
-    dog_id = add_to_database(new_entry['title'], new_entry['tags'])
+    dog_id = add_to_database(new_entry['title'], ', '.join(new_entry['tags']))
     resize_image(new_entry['path'], 500)
     for content_server_tag in content_servers:
         copy_file_to_docker_container(new_entry['path'], f'{content_folder_path}/{dog_id}.jpg', content_server_tag)
