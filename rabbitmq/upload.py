@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 import pika
-import sys
+import json
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
@@ -8,7 +7,18 @@ channel = connection.channel()
 
 channel.queue_declare(queue='task_queue', durable=True)
 
-message = ' '.join(sys.argv[1:]) or "Hello World!"
+path = input('Enter path to image: ')
+title = input('Enter title: ')
+tags = []
+while True:
+    tag = input('Enter tag (0 to stop adding tags): ')
+    if tag == '0':
+        break
+    tags.append(tag)
+
+upload_dict = {'path': path, 'title': title, 'tags': tags}
+
+message = json.dumps(upload_dict)
 channel.basic_publish(
     exchange='',
     routing_key='task_queue',
