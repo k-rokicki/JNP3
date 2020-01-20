@@ -1,4 +1,5 @@
 from django.core.files import File
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -191,6 +192,7 @@ def upload_doggo(request):
             body=message,
             properties=pika.BasicProperties(
                 delivery_mode=2,  # make message persistent
-            ))
+        ))
+        return HttpResponseRedirect('/upload')
 
     return render(request, 'upload_doggo.html')
