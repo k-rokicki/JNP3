@@ -11,12 +11,6 @@ import json
 from os import system
 import string
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
-
-channel.queue_declare(queue='task_queue', durable=True)
-
 url = 'http://localhost:9200/images/image/_search?pretty'
 headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
 
@@ -170,6 +164,12 @@ def search_doggos(request):
 def upload_doggo(request):
 
     if request.method == 'POST':
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost'))
+        channel = connection.channel()
+
+        channel.queue_declare(queue='task_queue', durable=True)
+
         image = request.FILES['dog_image']
         title = request.POST.get("title", "")
         tags = request.POST.get("tags", "")
@@ -194,6 +194,9 @@ def upload_doggo(request):
             properties=pika.BasicProperties(
                 delivery_mode=2,  # make message persistent
         ))
+
+        connection.close()
+
         return HttpResponseRedirect('/upload')
 
     return render(request, 'upload_doggo.html')
